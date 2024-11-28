@@ -1,11 +1,18 @@
-import pgp from 'pg-promise'
+import { sql } from "../database/database.js";
 
+export class TaskController {
 
-const connection = pgp()('postgres://postgres:123456@localhost:5432/app')
+    async listTasks() {
+        const tasks = await sql`select * from tasks`;
+        return tasks
+    }
 
-export async function listTasks(req, res) {
-    const tasks = await connection.query("select * from mateus.tasks")
-    console.log(tasks)
-    res.status(200).json(tasks)
+    async createTask(task) {
+        const {name, description, opened, closed} = task;
+        await sql`insert into tasks (name, description) VALUES (${name}, ${description})`
+    }
+
+    async deleteTask(id) {
+        await sql`delete from tasks where id = ${id}`
+    }
 }
-
