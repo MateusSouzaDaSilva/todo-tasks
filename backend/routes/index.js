@@ -7,10 +7,12 @@ const router = express.Router();
 const taskService = new TaskService(sql);
 const taskController = new TaskController(taskService);
 
-router.get("/", async (req, res) => taskController.listTasks(req, res))
+router.get("/", (req, res) => taskController.listTasks(req, res))
 
 router.post("/create", (req, res) => taskController.createTask(req, res));
 
 router.delete("/:id", (req, res) => taskController.deleteTask(req, res));
+
+router.put("/:id", (req, res) => taskController.updateTask(req, res));
 
 export default router;

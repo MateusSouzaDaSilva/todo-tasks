@@ -1,41 +1,50 @@
 import { sql } from "../database/database.js";
 
 export class TaskController {
-    constructor(taskService) {
-        this.taskService = taskService;
+  constructor(taskService) {
+    this.taskService = taskService;
+  }
+
+  async listTasks(req, res) {
+    const tasks = await this.taskService.listTasks();
+
+    return res.status(200).json(tasks);
+  }
+
+  async createTask(req, res) {
+    try {
+      const task = req.body;
+
+      await this.taskService.createTask(task);
+
+      return res.status(201).json({ message: "Task created successfully" });
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
     }
+  }
 
-    async listTasks(req, res) {
-        const tasks = await this.taskService.listTasks();
+  async deleteTask(req, res) {
+    try {
+      const { id } = req.params;
 
-        return res.status(200).json(tasks);
+      await this.taskService.deleteTask(id);
+
+      return res.status(201).json({ message: "Task deleted successfully" });
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
     }
+  }
 
-    async createTask(req, res) {
-        try {
-            const task = req.body;
+  async updateTask(req, res) {
+    try {
+      const { id } = req.params;
+      const task = req.body;
 
-            await this.taskService.createTask(task);
+      await this.taskService.updateTask(id, task);
 
-            return res.status(201).json({ message: 'Task created successfully' }) 
-        } catch (error) {
-            return res.status(500).json({ error: error.message });
-        }
-
-       
+      return res.status(200).json({ task: task, message: "task updated" });
+    } catch (error) {
+      return res.status(500).json({error: error.message});
     }
-
-    async deleteTask(req, res) {
-
-        try {
-            const { id } = req.params;
-
-            await this.taskService.deleteTask(id);
-
-            return res.status(201).json({message: 'Task deleted successfully'});
-        } catch (error) {
-            return res.status(500).json({ error: error.message});
-        }
-
-    }
+  }
 }
