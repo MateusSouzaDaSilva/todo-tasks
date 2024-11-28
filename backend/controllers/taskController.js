@@ -1,18 +1,41 @@
 import { sql } from "../database/database.js";
 
 export class TaskController {
-
-    async listTasks() {
-        const tasks = await sql`select * from tasks`;
-        return tasks
+    constructor(taskService) {
+        this.taskService = taskService;
     }
 
-    async createTask(task) {
-        const {name, description, opened, closed} = task;
-        await sql`insert into tasks (name, description) VALUES (${name}, ${description})`
+    async listTasks(req, res) {
+        const tasks = await this.taskService.listTasks();
+
+        return res.status(200).json(tasks);
     }
 
-    async deleteTask(id) {
-        await sql`delete from tasks where id = ${id}`
+    async createTask(req, res) {
+        try {
+            const task = req.body;
+
+            await this.taskService.createTask(task);
+
+            return res.status(201).json({ message: 'Task created successfully' }) 
+        } catch (error) {
+            return res.status(500).json({ error: error.message });
+        }
+
+       
+    }
+
+    async deleteTask(req, res) {
+
+        try {
+            const { id } = req.params;
+
+            await this.taskService.deleteTask(id);
+
+            return res.status(201).json({message: 'Task deleted successfully'});
+        } catch (error) {
+            return res.status(500).json({ error: error.message});
+        }
+
     }
 }
